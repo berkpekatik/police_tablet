@@ -1,9 +1,5 @@
 <html>
 <style>
-
-
-
-
     html {
         display: flex;
         justify-content: center;
@@ -319,9 +315,12 @@
 
     function Refresh() {
         $("#getPlayers2 option").remove().selectpicker("refresh");
+        $("#getPlayers3 option").remove().selectpicker("refresh");
         $("#getPlayers option").remove().selectpicker("refresh");
         jQuery.each(playerList, function (index, value) {
             $("#getPlayers2").append('<option value="' + value.identifier + '">' + value.firstname + ' ' + value.lastname + '</option>').selectpicker("refresh");
+            $("#getPlayers").append('<option value="' + value.identifier + '">' + value.firstname + ' ' + value.lastname + '</option>').selectpicker("refresh");
+            $("#getPlayers3").append('<option value="' + value.identifier + '">' + value.firstname + ' ' + value.lastname + '</option>').selectpicker("refresh");
         });
 
         jQuery.each(playerList, function (index, value) {
@@ -478,7 +477,8 @@
 
     $("#finecategory").change(function () {
         $.post('http://police_tablet/getAllFines', JSON.stringify($("#finecategory option:selected").val()), function (cb) {
-            jQuery.each(cb, function (index, value) {
+            $("#finelist option").remove().selectpicker("refresh");
+			jQuery.each(cb, function (index, value) {
                 $("#finelist").append('<option data-subtext="' + value.amount + '$" value="' + value.amount + '">' + value.label + '</option>').selectpicker("refresh");
             });
         });
@@ -571,6 +571,10 @@
     $(document).ready(function () {
         $(".nav-tabs a").click(function () {
             $(this).tab('show');
+			$.post('http://police_tablet/getPlayers', JSON.stringify(""), function (cb) {
+				playerList = cb
+				Refresh();
+			});
         });
 
         $("#successError").hide();
