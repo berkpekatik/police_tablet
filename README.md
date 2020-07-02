@@ -58,9 +58,98 @@ AddEventHandler('esx_billing:sendBillFromTablet', function(playerId, sharedAccou
 				end)
 			end
 	end
-end) ```
+end) 
+```
+
+and then change the all esx_criminalrecords server.lua
+
+``` ESX = nil
+
+TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+
+RegisterServerEvent('esx_qalle_brottsregister:add')
+AddEventHandler('esx_qalle_brottsregister:add', function(identifier,type, reason)
+  --local identifier = ESX.GetPlayerFromId(id).identifier
+  local sender = ESX.GetPlayerFromId(source).identifier
+  local date = os.date("%x %X")
+  local currentTimeInSeconds = os.time()
+  local timeAgo = 7 * 24 * 60 * 60 --aded seven days
+  local endofcrime = os.date("%x %X", currentTimeInSeconds + timeAgo)
+  MySQL.Async.fetchAll(
+    'SELECT firstname, lastname FROM users WHERE identifier = @identifier',{['@identifier'] = identifier},
+    function(resultFrom) 
+   MySQL.Async.fetchAll(
+    'SELECT firstname, lastname FROM users WHERE identifier = @sender',{['@sender'] = sender},
+    function(resultSender)
+    if resultFrom[1] ~= nil and resultSender[1] ~= nil then
+      MySQL.Async.execute('INSERT INTO qalle_brottsregister (identifier, sender, senderfirstname, senderlastname, firstname, lastname, dateofcrime, endofcrime, crime, type) VALUES (@identifier, @sender, @senderfirstname, @senderlastname,@firstname, @lastname, @dateofcrime, @endofcrime, @crime,@type)',
+        {
+          ['@identifier']   = identifier,
+          ['@sender']   = sender,
+          ['@firstname']    = resultFrom[1].firstname,
+          ['@lastname']     = resultFrom[1].lastname,
+          ['@senderfirstname']    = resultSender[1].firstname,
+          ['@senderlastname']     = resultSender[1].lastname,
+          ['@dateofcrime']  = date,
+          ['@endofcrime']  = endofcrime,
+          ['@crime']        = reason,
+          ['@type']        = type,
+        }
+      )
+    end
+  end)
+ end)
+end)
 
 
+--gets brottsregister
+ESX.RegisterServerCallback('esx_qalle_brottsregister:getall', function(source, cb, identifier,type)
+  --local identifier = ESX.GetPlayerFromId(target).identifier
+ -- local name = getIdentity(target)
+ if type == "2" then
+	MySQL.Async.fetchAll("SELECT * FROM qalle_brottsregister WHERE type = @type",
+	  {
+		['@type'] = type
+	  },
+	  function(result)
+		  cb(result)
+	  end)
+ else
+	 MySQL.Async.fetchAll("SELECT * FROM qalle_brottsregister WHERE identifier = @identifier AND type = @type",
+	  {
+		['@identifier'] = identifier,
+		['@type'] = type
+	  },
+	  function(result)
+		if identifier ~= nil then
+		  cb(result)
+		end
+	  end)
+ end
+end)
+
+RegisterServerEvent('esx_qalle_brottsregister:remove')
+AddEventHandler('esx_qalle_brottsregister:remove', function(id)
+  --local identifier = ESX.GetPlayerFromId(id).identifier
+
+      MySQL.Async.execute('DELETE FROM qalle_brottsregister WHERE id = @id',
+      {
+        ['@id']    = id
+      }
+    )
+end)
+
+RegisterServerEvent('esx_qalle_brottsregister:update')
+AddEventHandler('esx_qalle_brottsregister:update', function(id, crime)
+  MySQL.Async.execute('UPDATE qalle_brottsregister SET crime = @crime WHERE id = @id',
+        {
+          ['@id']    = id,
+          ['@crime'] = crime
+        }
+      )
+	  
+end)
+```
 
 ![image](/pics/1.jpg)
 ![image](/pics/2.jpg)
