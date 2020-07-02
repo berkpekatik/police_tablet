@@ -150,7 +150,23 @@ AddEventHandler('esx_qalle_brottsregister:update', function(id, crime)
 	  
 end)
 ```
-
+use this sql
+```
+CREATE TABLE IF NOT EXISTS `qalle_brottsregister` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `identifier` varchar(50) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `sender` varchar(50) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `firstname` varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `senderfirstname` varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `senderlastname` varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `lastname` varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  `type` varchar(255) NOT NULL DEFAULT '1',
+  `dateofcrime` varchar(255) NOT NULL,
+  `endofcrime` varchar(255) NOT NULL,
+  `crime` varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=latin1;
+```
 ![image](/pics/1.jpg)
 ![image](/pics/2.jpg)
 ![image](/pics/3.jpg)
